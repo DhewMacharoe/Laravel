@@ -58,4 +58,3 @@
     <p>Sudah punya akun? <a href="{{ route('login') }}">Masuk</a></p>
 </div>
 @endsection
-            W
