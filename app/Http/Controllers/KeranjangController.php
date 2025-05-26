@@ -139,44 +139,44 @@ class KeranjangController extends Controller
     }
 
     public function checkout($id_pelanggan)
-{
-    $keranjangs = Keranjang::where('id_pelanggan', $id_pelanggan)->get();
+    {
+        $keranjangs = Keranjang::where('id_pelanggan', $id_pelanggan)->get();
 
-    if ($keranjangs->isEmpty()) {
-        return response()->json(['message' => 'Keranjang kosong'], 400);
-    }
+        if ($keranjangs->isEmpty()) {
+            return response()->json(['message' => 'Keranjang kosong'], 400);
+        }
 
-    $totalHarga = $keranjangs->sum(function ($item) {
-        return $item->harga * $item->jumlah;
-    });
+        $totalHarga = $keranjangs->sum(function ($item) {
+            return $item->harga * $item->jumlah;
+        });
 
-    $pemesanan = Pemesanan::create([
-        'id_pelanggan' => $id_pelanggan,
-        'total_harga' => $totalHarga,
-        'status' => 'menunggu',
-        'waktu_pemesanan' => Carbon::now(),
-    ]);
-
-    foreach ($keranjangs as $item) {
-        DetailPemesanan::create([
-            'id_pemesanan' => $pemesanan->id,
-            'id_menu' => $item->id_menu,
-            'jumlah' => $item->jumlah,
-            'harga_satuan' => $item->harga,
-            'subtotal' => $item->harga * $item->jumlah,
-            'catatan' => $item->catatan,
-            'suhu' => $item->suhu, // ✅ Suhu dimasukkan ke detail_pemesanan
-
+        $pemesanan = Pemesanan::create([
+            'id_pelanggan' => $id_pelanggan,
+            'total_harga' => $totalHarga,
+            'status' => 'menunggu',
+            'waktu_pemesanan' => Carbon::now(),
         ]);
+
+        foreach ($keranjangs as $item) {
+            DetailPemesanan::create([
+                'id_pemesanan' => $pemesanan->id,
+                'id_menu' => $item->id_menu,
+                'jumlah' => $item->jumlah,
+                'harga_satuan' => $item->harga,
+                'subtotal' => $item->harga * $item->jumlah,
+                'catatan' => $item->catatan,
+                'suhu' => $item->suhu, // ✅ Suhu dimasukkan ke detail_pemesanan
+
+            ]);
+        }
+
+        Keranjang::where('id_pelanggan', $id_pelanggan)->delete();
+
+        return response()->json([
+            'message' => 'Pemesanan berhasil dibuat',
+            'pemesanan' => $pemesanan
+        ], 201);
     }
-
-    Keranjang::where('id_pelanggan', $id_pelanggan)->delete();
-
-    return response()->json([
-        'message' => 'Pemesanan berhasil dibuat',
-        'pemesanan' => $pemesanan
-    ], 201);
-}
 
     // Tambahkan method baru untuk mendapatkan keranjang berdasarkan pelanggan
     public function getByPelanggan($id_pelanggan)
