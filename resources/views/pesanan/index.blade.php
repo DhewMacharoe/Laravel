@@ -47,13 +47,6 @@
                             <div class="col-md-4 d-flex align-items-end">
                                 <button type="submit" class="btn btn-primary me-2">Filter</button>
                                 <a href="{{ route('pesanan.index') }}" class="btn btn-secondary">Reset</a>
-                                <form action="{{ route('pesanan.hapus-semua') }}" method="POST"
-                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus semua pesanan?')"
-                                    style="display: inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">Hapus Semua</button>
-                                </form>
                             </div>
                         </form>
                     </div>
