@@ -248,6 +248,7 @@
                                     <th>Harga</th>
                                     <th>Jumlah</th>
                                     <th>Subtotal</th>
+                                    <th>Catatan</th>
                                 </tr>
                             </thead>
                             <tbody id="detailPesananBody">
@@ -326,10 +327,15 @@
                             subtotal.textContent = 'Rp ' + new Intl.NumberFormat('id-ID')
                                 .format(detail.subtotal);
 
+                            const catatan = document.createElement('td');
+                            catatan.textContent = detail.catatan ||
+                            '-'; // tampilkan '-' jika kosong
+
                             row.appendChild(namaMakanan);
                             row.appendChild(harga);
                             row.appendChild(jumlah);
                             row.appendChild(subtotal);
+                            row.appendChild(catatan); // Tambahkan catatan
 
                             detailBody.appendChild(row);
                         });
