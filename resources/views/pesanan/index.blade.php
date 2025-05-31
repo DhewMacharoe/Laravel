@@ -249,6 +249,7 @@
                                     <th>Jumlah</th>
                                     <th>Subtotal</th>
                                     <th>Catatan</th>
+                                    <th>Suhu</th>
                                 </tr>
                             </thead>
                             <tbody id="detailPesananBody">
@@ -331,11 +332,16 @@
                             catatan.textContent = detail.catatan ||
                             '-'; // tampilkan '-' jika kosong
 
+                            const suhu = document.createElement('td');
+                            suhu.textContent = detail.suhu || '-'; // tampilkan '-' jika kosong
+
+
                             row.appendChild(namaMakanan);
                             row.appendChild(harga);
                             row.appendChild(jumlah);
                             row.appendChild(subtotal);
                             row.appendChild(catatan); // Tambahkan catatan
+                            row.appendChild(suhu); // Tambahkan suhu
 
                             detailBody.appendChild(row);
                         });
