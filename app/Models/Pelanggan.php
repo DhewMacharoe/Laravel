@@ -17,8 +17,17 @@ class Pelanggan extends Model
         'device_id',
     ];
     public function pemesanan()
-{
-    return $this->hasMany(Pemesanan::class, 'id_pelanggan');
-}
+    {
+        return $this->hasMany(\App\Models\Pemesanan::class, 'id_pelanggan');
+    }
 
+    public function keranjang()
+    {
+        return $this->hasMany(\App\Models\Keranjang::class, 'id_pelanggan');
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(\App\Models\Rating::class, 'id_pelanggan');
+    }
 }
