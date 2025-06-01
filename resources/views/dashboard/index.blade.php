@@ -317,12 +317,18 @@
             const cafeStatusText = document.getElementById('cafeStatusText');
             const addToCartButtons = document.querySelectorAll('.add-to-cart-button');
 
+            if (localStorage.getItem('cafeStatus') === 'nonaktif') {
+                toggleCafeStatus.checked = false;
+                cafeStatusText.textContent = 'Non Aktif';
+            }
             toggleCafeStatus.addEventListener('change', function() {
                 if (this.checked) {
                     cafeStatusText.textContent = 'Aktif';
+                    localStorage.setItem('cafeStatus', 'aktif');
                     addToCartButtons.forEach(button => button.disabled = false);
                 } else {
                     cafeStatusText.textContent = 'Non Aktif';
+                    localStorage.setItem('cafeStatus', 'nonaktif');
                     addToCartButtons.forEach(button => {
                         button.disabled = true;
                         button.onclick = function() {
