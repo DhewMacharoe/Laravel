@@ -77,8 +77,15 @@
         <div class="row">
             <div class="col-12 mb-4">
                 <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Pesanan Terbaru</h5>
+                        <div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleCafeStatus" checked>
+                                <span class="slider round"></span>
+                            </label>
+                            <span id="cafeStatusText">Aktif</span>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -238,24 +245,87 @@
                                 </tr>
                             </thead>
                             <tbody id="detailPesananBody">
-                                <!-- Data akan diisi melalui JavaScript -->
                             </tbody>
                         </table>
                     </div>
                     <div class="modal-footer" id="modalFooter">
-                        <!-- Tombol akan diisi secara dinamis berdasarkan status -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #2196F3;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+    </style>
 @endsection
 
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const detailModal = document.getElementById('detailModal');
+            const toggleCafeStatus = document.getElementById('toggleCafeStatus');
+            const cafeStatusText = document.getElementById('cafeStatusText');
+            const addToCartButtons = document.querySelectorAll('.add-to-cart-button');
 
+            toggleCafeStatus.addEventListener('change', function() {
+                if (this.checked) {
+                    cafeStatusText.textContent = 'Aktif';
+                    addToCartButtons.forEach(button => button.disabled = false); // Aktifkan semua tombol
+                } else {
+                    cafeStatusText.textContent = 'Non Aktif';
+                    addToCartButtons.forEach(button => {
+                        button.disabled = true; // Nonaktifkan semua tombol
+                        button.onclick = function() {
+                            alert('Cafe sedang tutup'); // Tampilkan pesan error
+                        };
+                    });
+                }
+            });
+
+            const detailModal = document.getElementById('detailModal');
             detailModal.addEventListener('show.bs.modal', function(event) {
                 const button = event.relatedTarget;
                 const id = button.getAttribute('data-id');
@@ -278,10 +348,10 @@
                         document.getElementById('namaPelanggan').textContent = data.pelanggan.nama;
                         document.getElementById('teleponPelanggan').textContent = data.pelanggan
                             .telepon || '-';
-                        document.getElementById('tanggalPesanan').textContent = new Date(data
-                            .created_at).toLocaleString('id-ID');
-                        document.getElementById('totalHarga').textContent = 'Rp ' + new Intl
-                            .NumberFormat('id-ID').format(data.total_harga);
+                        document.getElementById('tanggalPesanan').textContent =
+                            new Date(data.created_at).toLocaleString('id-ID');
+                        document.getElementById('totalHarga').textContent = 'Rp ' +
+                            new Intl.NumberFormat('id-ID').format(data.total_harga);
 
                         // Format metode pembayaran
                         const paymentMethods = {
@@ -289,8 +359,8 @@
                             'qris': 'QRIS',
                             'transfer bank': 'Transfer Bank'
                         };
-                        document.getElementById('metodePembayaran').textContent = paymentMethods[data
-                            .metode_pembayaran] || data.metode_pembayaran;
+                        document.getElementById('metodePembayaran').textContent =
+                            paymentMethods[data.metode_pembayaran] || data.metode_pembayaran;
 
                         // Format status
                         const statusBadges = {
@@ -329,15 +399,15 @@
                         // Isi tabel detail pesanan
                         const detailBody = document.getElementById('detailPesananBody');
                         detailBody.innerHTML = data.detail_pemesanan.map(detail => `
-                            <tr>
-                                <td>${detail.menu.nama_menu}</td>
-                                <td>Rp ${new Intl.NumberFormat('id-ID').format(detail.harga_satuan)}</td>
-                                <td>${detail.jumlah}</td>
-                                <td>Rp ${new Intl.NumberFormat('id-ID').format(detail.subtotal)}</td>
-                                <td>${detail.suhu || '-'}</td>
-                                <td>${detail.catatan || '-'}</td>
-                            </tr>
-                        `).join('');
+                        <tr>
+                            <td>${detail.menu.nama_menu}</td>
+                            <td>Rp ${new Intl.NumberFormat('id-ID').format(detail.harga_satuan)}</td>
+                            <td>${detail.jumlah}</td>
+                            <td>Rp ${new Intl.NumberFormat('id-ID').format(detail.subtotal)}</td>
+                            <td>${detail.suhu || '-'}</td>
+                            <td>${detail.catatan || '-'}</td>
+                        </tr>
+                    `).join('');
 
                         // Tombol WhatsApp
                         const telepon = data.pelanggan.telepon.replace(/[^0-9]/g, '');
@@ -352,14 +422,14 @@
                             'dibatalkan': 'Pesanan Anda telah dibatalkan.'
                         };
                         const message =
-                            `Halo ${data.pelanggan.nama},\n\nPesanan Anda di *DelBites*:\nTotal: Rp ${ new Intl.NumberFormat('id-ID').format(data.total_harga)}\nStatus: *${status.text}*\n\n${statusMessages[data.status] || `Status pesanan Anda: ${data.status}`}\n\nTerima kasih telah memesan.`;
+                            `Halo ${data.pelanggan.nama},\n\nPesanan Anda di *DelBites*:\nTotal: Rp ${new Intl.NumberFormat('id-ID').format(data.total_harga)}\nStatus: *${status.text}*\n\n${statusMessages[data.status] || `Status pesanan Anda: ${data.status}`}\n\nTerima kasih telah memesan.`;
 
                         modalFooter.innerHTML = `
-                            <a href="https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}" 
-                               class="btn btn-success me-2" target="_blank">
-                                <i class="fab fa-whatsapp"></i> Hubungi Pelanggan
-                            </a>
-                        `;
+                        <a href="https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}" 
+                           class="btn btn-success me-2" target="_blank">
+                            <i class="fab fa-whatsapp"></i> Hubungi Pelanggan
+                        </a>
+                    `;
 
                         modalFooter.innerHTML +=
                             '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>';
@@ -395,7 +465,8 @@
                         console.error('Error:', error);
                         alert('Terjadi kesalahan saat memperbarui status pesanan');
                     });
-            }
+            };
         });
     </script>
+
 @endsection
