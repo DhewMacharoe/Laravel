@@ -80,11 +80,11 @@
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Pesanan Terbaru</h5>
                         <div>
+                            <span id="cafeStatusText">Aktif</span>
                             <label class="switch">
                                 <input type="checkbox" id="toggleCafeStatus" checked>
                                 <span class="slider round"></span>
                             </label>
-                            <span id="cafeStatusText">Aktif</span>
                         </div>
                     </div>
                     <div class="card-body">
@@ -313,13 +313,13 @@
             toggleCafeStatus.addEventListener('change', function() {
                 if (this.checked) {
                     cafeStatusText.textContent = 'Aktif';
-                    addToCartButtons.forEach(button => button.disabled = false); // Aktifkan semua tombol
+                    addToCartButtons.forEach(button => button.disabled = false);
                 } else {
                     cafeStatusText.textContent = 'Non Aktif';
                     addToCartButtons.forEach(button => {
-                        button.disabled = true; // Nonaktifkan semua tombol
+                        button.disabled = true;
                         button.onclick = function() {
-                            alert('Cafe sedang tutup'); // Tampilkan pesan error
+                            alert('Cafe sedang tutup');
                         };
                     });
                 }
