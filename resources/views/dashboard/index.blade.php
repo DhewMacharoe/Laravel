@@ -79,16 +79,6 @@
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white">
                         <h5 class="mb-0">Pesanan Terbaru</h5>
-<<<<<<< HEAD
-                        <div>
-                            <span id="cafeStatusText">Aktif</span>
-                            <label class="switch" style="margin-left: 10px;">
-                                <input type="checkbox" id="toggleCafeStatus" checked>
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
-=======
->>>>>>> parent of 5a681dc (switch)
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -259,92 +249,11 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-
-    <style>
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked+.slider {
-            background-color: #2196F3;
-        }
-
-        input:checked+.slider:before {
-            transform: translateX(20px);
-        }
-    </style>
-
-=======
->>>>>>> parent of 5a681dc (switch)
 @endsection
 
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-<<<<<<< HEAD
-            const toggleCafeStatus = document.getElementById('toggleCafeStatus');
-            const cafeStatusText = document.getElementById('cafeStatusText');
-
-            // Check local storage for cafe status
-            if (localStorage.getItem('cafeStatus') === 'nonaktif') {
-                toggleCafeStatus.checked = false;
-                cafeStatusText.textContent = 'Non Aktif';
-                disablePaymentOptions();
-            }
-
-            toggleCafeStatus.addEventListener('change', function() {
-                const status = this.checked ? 'aktif' : 'nonaktif';
-                cafeStatusText.textContent = status === 'aktif' ? 'Aktif' : 'Non Aktif';
-                localStorage.setItem('cafeStatus', status);
-
-                // Call API to save cafe status
-                fetch('/api/cafe/status', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        status: status
-                    })
-                }).then(response => {
-                    if (response.ok) {
-                        if (this.checked) {
-                            enablePaymentOptions();
-=======
             const detailModal = document.getElementById('detailModal');
 
             detailModal.addEventListener('show.bs.modal', function(event) {
@@ -478,28 +387,14 @@
                             const modal = bootstrap.Modal.getInstance(detailModal);
                             modal.hide();
                             window.location.reload();
->>>>>>> parent of 5a681dc (switch)
                         } else {
-                            disablePaymentOptions();
+                            alert('Gagal memperbarui status pesanan');
                         }
-<<<<<<< HEAD
-                    }
-                });
-            });
-
-            function disablePaymentOptions() {
-                window.flutter_inappwebview.callHandler('disablePaymentOptions');
-            }
-
-            function enablePaymentOptions() {
-                window.flutter_inappwebview.callHandler('enablePaymentOptions');
-=======
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         alert('Terjadi kesalahan saat memperbarui status pesanan');
                     });
->>>>>>> parent of 5a681dc (switch)
             }
         });
     </script>
