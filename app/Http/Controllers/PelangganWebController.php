@@ -43,17 +43,6 @@ class PelangganWebController extends Controller
 {
     $pelanggan = Pelanggan::findOrFail($id);
 
-    foreach ($pelanggan->pemesanan as $pemesanan) {
-        $pemesanan->detailPemesanan()->delete();
-        $pemesanan->pembayaran()->delete();
-        $pemesanan->delete();
-    }
-
-    $pelanggan->keranjang()->delete();
-    $pelanggan->ratings()->delete();
-
-    
-
     if ($pelanggan->pemesanan()->exists()) {
         return redirect()->route('pelanggan.index')
             ->with('error', 'Tidak dapat menghapus pelanggan karena masih memiliki data pemesanan.');
