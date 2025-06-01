@@ -77,8 +77,9 @@
         <div class="row">
             <div class="col-12 mb-4">
                 <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-white">
                         <h5 class="mb-0">Pesanan Terbaru</h5>
+<<<<<<< HEAD
                         <div>
                             <span id="cafeStatusText">Aktif</span>
                             <label class="switch" style="margin-left: 10px;">
@@ -86,6 +87,8 @@
                                 <span class="slider round"></span>
                             </label>
                         </div>
+=======
+>>>>>>> parent of 5a681dc (switch)
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -245,15 +248,18 @@
                                 </tr>
                             </thead>
                             <tbody id="detailPesananBody">
+                                <!-- Data akan diisi melalui JavaScript -->
                             </tbody>
                         </table>
                     </div>
                     <div class="modal-footer" id="modalFooter">
+                        <!-- Tombol akan diisi secara dinamis berdasarkan status -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
+<<<<<<< HEAD
 
     <style>
         .switch {
@@ -302,11 +308,14 @@
         }
     </style>
 
+=======
+>>>>>>> parent of 5a681dc (switch)
 @endsection
 
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+<<<<<<< HEAD
             const toggleCafeStatus = document.getElementById('toggleCafeStatus');
             const cafeStatusText = document.getElementById('cafeStatusText');
 
@@ -335,9 +344,145 @@
                     if (response.ok) {
                         if (this.checked) {
                             enablePaymentOptions();
+=======
+            const detailModal = document.getElementById('detailModal');
+
+            detailModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id');
+                const modalFooter = document.getElementById('modalFooter');
+
+                // Kosongkan footer modal terlebih dahulu
+                modalFooter.innerHTML =
+                    '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>';
+
+                // Fetch detail pesanan dari server
+                fetch(`/pesanan/${id}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Isi data ke dalam modal
+                        document.getElementById('pesananId').textContent = data.id;
+                        document.getElementById('idPelanggan').textContent = data.id_pelanggan;
+                        document.getElementById('namaPelanggan').textContent = data.pelanggan.nama;
+                        document.getElementById('teleponPelanggan').textContent = data.pelanggan
+                            .telepon || '-';
+                        document.getElementById('tanggalPesanan').textContent = new Date(data
+                            .created_at).toLocaleString('id-ID');
+                        document.getElementById('totalHarga').textContent = 'Rp ' + new Intl
+                            .NumberFormat('id-ID').format(data.total_harga);
+
+                        // Format metode pembayaran
+                        const paymentMethods = {
+                            'tunai': 'Tunai',
+                            'qris': 'QRIS',
+                            'transfer bank': 'Transfer Bank'
+                        };
+                        document.getElementById('metodePembayaran').textContent = paymentMethods[data
+                            .metode_pembayaran] || data.metode_pembayaran;
+
+                        // Format status
+                        const statusBadges = {
+                            'menunggu': {
+                                class: 'bg-warning',
+                                text: 'Menunggu'
+                            },
+                            'pembayaran': {
+                                class: 'bg-info',
+                                text: 'Pembayaran'
+                            },
+                            'dibayar': {
+                                class: 'bg-primary',
+                                text: 'Dibayar'
+                            },
+                            'diproses': {
+                                class: 'bg-secondary',
+                                text: 'Diproses'
+                            },
+                            'selesai': {
+                                class: 'bg-success',
+                                text: 'Selesai'
+                            },
+                            'dibatalkan': {
+                                class: 'bg-danger',
+                                text: 'Dibatalkan'
+                            }
+                        };
+                        const status = statusBadges[data.status] || {
+                            class: 'bg-secondary',
+                            text: data.status
+                        };
+                        document.getElementById('statusPesanan').innerHTML =
+                            `<span class="badge ${status.class}">${status.text}</span>`;
+
+                        // Isi tabel detail pesanan
+                        const detailBody = document.getElementById('detailPesananBody');
+                        detailBody.innerHTML = data.detail_pemesanan.map(detail => `
+                            <tr>
+                                <td>${detail.menu.nama_menu}</td>
+                                <td>Rp ${new Intl.NumberFormat('id-ID').format(detail.harga_satuan)}</td>
+                                <td>${detail.jumlah}</td>
+                                <td>Rp ${new Intl.NumberFormat('id-ID').format(detail.subtotal)}</td>
+                                <td>${detail.suhu || '-'}</td>
+                                <td>${detail.catatan || '-'}</td>
+                            </tr>
+                        `).join('');
+
+                        // Tombol WhatsApp
+                        const telepon = data.pelanggan.telepon.replace(/[^0-9]/g, '');
+                        const formattedPhone = telepon.startsWith('0') ? '62' + telepon.substring(1) :
+                            telepon;
+                        const statusMessages = {
+                            'menunggu': 'Pesanan Anda sedang menunggu konfirmasi.',
+                            'pembayaran': 'Silakan segera lakukan pembayaran.',
+                            'dibayar': 'Pembayaran Anda telah kami terima.',
+                            'diproses': 'Pesanan Anda sedang diproses.',
+                            'selesai': 'Pesanan Anda telah selesai. Terima kasih!',
+                            'dibatalkan': 'Pesanan Anda telah dibatalkan.'
+                        };
+                        const message =
+                            `Halo ${data.pelanggan.nama},\n\nPesanan Anda di *DelBites*:\nTotal: Rp ${ new Intl.NumberFormat('id-ID').format(data.total_harga)}\nStatus: *${status.text}*\n\n${statusMessages[data.status] || `Status pesanan Anda: ${data.status}`}\n\nTerima kasih telah memesan.`;
+
+                        modalFooter.innerHTML = `
+                            <a href="https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}" 
+                               class="btn btn-success me-2" target="_blank">
+                                <i class="fab fa-whatsapp"></i> Hubungi Pelanggan
+                            </a>
+                        `;
+
+                        modalFooter.innerHTML +=
+                            '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan saat mengambil data pesanan.');
+                    });
+            });
+
+            window.updateStatus = function(pesananId, status) {
+                fetch(`/pesanan/status/${pesananId}/${status}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            const modal = bootstrap.Modal.getInstance(detailModal);
+                            modal.hide();
+                            window.location.reload();
+>>>>>>> parent of 5a681dc (switch)
                         } else {
                             disablePaymentOptions();
                         }
+<<<<<<< HEAD
                     }
                 });
             });
@@ -348,6 +493,13 @@
 
             function enablePaymentOptions() {
                 window.flutter_inappwebview.callHandler('enablePaymentOptions');
+=======
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan saat memperbarui status pesanan');
+                    });
+>>>>>>> parent of 5a681dc (switch)
             }
         });
     </script>
