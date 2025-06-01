@@ -309,39 +309,31 @@
         document.addEventListener('DOMContentLoaded', function() {
             const toggleCafeStatus = document.getElementById('toggleCafeStatus');
             const cafeStatusText = document.getElementById('cafeStatusText');
-            const paymentButtons = document.querySelectorAll('.payment-button');
-
             // Check local storage for cafe status
             if (localStorage.getItem('cafeStatus') === 'nonaktif') {
                 toggleCafeStatus.checked = false;
                 cafeStatusText.textContent = 'Non Aktif';
-                paymentButtons.forEach(button => {
-                    button.disabled = true;
-                    button.onclick = function() {
-                        alert('Cafe sedang tutup');
-                    };
-                });
+                disablePaymentOptions();
             }
-
             toggleCafeStatus.addEventListener('change', function() {
                 if (this.checked) {
                     cafeStatusText.textContent = 'Aktif';
                     localStorage.setItem('cafeStatus', 'aktif');
-                    paymentButtons.forEach(button => {
-                        button.disabled = false;
-                    });
+                    enablePaymentOptions();
                 } else {
                     cafeStatusText.textContent = 'Non Aktif';
                     localStorage.setItem('cafeStatus', 'nonaktif');
-                    paymentButtons.forEach(button => {
-                        button.disabled = true;
-                        button.onclick = function() {
-                            alert('Cafe sedang tutup');
-                        };
-                    });
+                    disablePaymentOptions();
                 }
             });
+
+            function disablePaymentOptions() {
+                window.flutter_inappwebview.callHandler('disablePaymentOptions');
+            }
+
+            function enablePaymentOptions() {
+                window.flutter_inappwebview.callHandler('enablePaymentOptions');
+            }
         });
     </script>
 @endsection
-            
