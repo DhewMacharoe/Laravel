@@ -319,7 +319,7 @@
 
             if (localStorage.getItem('cafeStatus') === 'nonaktif') {
                 toggleCafeStatus.checked = false;
-                cafeStatusText.textContent = 'Non Aktif';
+                cafeStatusText.textContent = 'Tidak Aktif';
             }
             toggleCafeStatus.addEventListener('change', function() {
                 if (this.checked) {
@@ -327,7 +327,7 @@
                     localStorage.setItem('cafeStatus', 'aktif');
                     addToCartButtons.forEach(button => button.disabled = false);
                 } else {
-                    cafeStatusText.textContent = 'Non Aktif';
+                    cafeStatusText.textContent = 'Tidak Aktif';
                     localStorage.setItem('cafeStatus', 'nonaktif');
                     addToCartButtons.forEach(button => {
                         button.disabled = true;
