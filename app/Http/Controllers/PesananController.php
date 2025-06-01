@@ -136,6 +136,8 @@ class PesananController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
+        $request->validate(['status' => 'required|string']);
+        session(['cafeStatus' => $request->status]);
         $pesanan = Pemesanan::findOrFail($id);
         $pesanan->status = $request->status;
         $pesanan->save();

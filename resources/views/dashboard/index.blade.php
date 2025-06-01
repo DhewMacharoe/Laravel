@@ -309,18 +309,20 @@
         document.addEventListener('DOMContentLoaded', function() {
             const toggleCafeStatus = document.getElementById('toggleCafeStatus');
             const cafeStatusText = document.getElementById('cafeStatusText');
+
             // Check local storage for cafe status
             if (localStorage.getItem('cafeStatus') === 'nonaktif') {
                 toggleCafeStatus.checked = false;
                 cafeStatusText.textContent = 'Non Aktif';
                 disablePaymentOptions();
             }
+
             toggleCafeStatus.addEventListener('change', function() {
                 const status = this.checked ? 'aktif' : 'nonaktif';
                 cafeStatusText.textContent = status === 'aktif' ? 'Aktif' : 'Non Aktif';
                 localStorage.setItem('cafeStatus', status);
 
-                // Panggil API untuk menyimpan status cafe
+                // Call API to save cafe status
                 fetch('/api/cafe/status', {
                     method: 'POST',
                     headers: {
@@ -329,13 +331,15 @@
                     body: JSON.stringify({
                         status: status
                     })
+                }).then(response => {
+                    if (response.ok) {
+                        if (this.checked) {
+                            enablePaymentOptions();
+                        } else {
+                            disablePaymentOptions();
+                        }
+                    }
                 });
-
-                if (this.checked) {
-                    enablePaymentOptions();
-                } else {
-                    disablePaymentOptions();
-                }
             });
 
             function disablePaymentOptions() {
