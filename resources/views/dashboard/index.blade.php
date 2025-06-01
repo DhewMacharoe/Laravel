@@ -259,8 +259,10 @@
         .switch {
             position: relative;
             display: inline-block;
-            width: 60px;
-            height: 34px;
+            width: 40px;
+            /* Ubah lebar switch */
+            height: 20px;
+            /* Ubah tinggi switch */
         }
 
         .switch input {
@@ -284,10 +286,14 @@
         .slider:before {
             position: absolute;
             content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
+            height: 16px;
+            /* Ubah tinggi tombol switch */
+            width: 16px;
+            /* Ubah lebar tombol switch */
+            left: 2px;
+            /* Ubah posisi tombol switch */
+            bottom: 2px;
+            /* Ubah posisi tombol switch */
             background-color: white;
             transition: .4s;
             border-radius: 50%;
@@ -298,9 +304,10 @@
         }
 
         input:checked+.slider:before {
-            transform: translateX(26px);
+            transform: translateX(20px);
         }
     </style>
+
 @endsection
 
 @section('scripts')
