@@ -20,7 +20,7 @@ class PelangganWebController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('nama', 'like', '%' . $request->search . '%')
-                  ->orWhere('telepon', 'like', '%' . $request->search . '%');
+                    ->orWhere('telepon', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -34,25 +34,31 @@ class PelangganWebController extends Controller
         }
 
         $pelanggan = $query->orderBy($sortBy, $sortOrder)
-                           ->paginate(10)
-                           ->appends($request->all());
+            ->paginate(10)
+            ->appends($request->all());
 
         return view('pelanggan.index', compact('pelanggan', 'sortBy', 'sortOrder'));
     }
     public function destroy($id)
-{
-    $pelanggan = Pelanggan::findOrFail($id);
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
 
-    if ($pelanggan->pemesanan()->exists()) {
+        foreach ($pelanggan->pemesanan as $pemesanan) {
+            $pemesanan->detailPemesanan()->delete();
+            $pemesanan->pembayaran()->delete();
+            $pemesanan->delete();
+        }
+
+        $pelanggan->keranjang()->delete();
+        $pelanggan->ratings()->delete();
+        if ($pelanggan->pemesanan()->exists()) {
+            return redirect()->route('pelanggan.index')
+                ->with('error', 'Tidak dapat menghapus pelanggan karena masih memiliki data pemesanan.');
+        }
+
+        $pelanggan->delete();
+
         return redirect()->route('pelanggan.index')
-            ->with('error', 'Tidak dapat menghapus pelanggan karena masih memiliki data pemesanan.');
+            ->with('success', 'Pelanggan berhasil dihapus.');
     }
-
-    $pelanggan->delete();
-
-    return redirect()->route('pelanggan.index')
-        ->with('success', 'Pelanggan berhasil dihapus.');
-}
-
-
 }
