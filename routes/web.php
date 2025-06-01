@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\NotifikasiController;
 use App\Events\NotifikasiEvent;
 use App\Models\Notifikasi;
+use App\Http\Controllers\CafeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,4 +86,6 @@ Route::middleware(['auth:admin'])->group(function () {
         broadcast(new NotifikasiEvent('Pesanan baru telah masuk!'))->toOthers();
         return 'Notifikasi terkirim';
     });
+    
+Route::post('/api/cafe/status', [CafeController::class, 'updateStatus']);
 });

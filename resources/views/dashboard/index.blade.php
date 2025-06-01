@@ -316,13 +316,24 @@
                 disablePaymentOptions();
             }
             toggleCafeStatus.addEventListener('change', function() {
+                const status = this.checked ? 'aktif' : 'nonaktif';
+                cafeStatusText.textContent = status === 'aktif' ? 'Aktif' : 'Non Aktif';
+                localStorage.setItem('cafeStatus', status);
+
+                // Panggil API untuk menyimpan status cafe
+                fetch('/api/cafe/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        status: status
+                    })
+                });
+
                 if (this.checked) {
-                    cafeStatusText.textContent = 'Aktif';
-                    localStorage.setItem('cafeStatus', 'aktif');
                     enablePaymentOptions();
                 } else {
-                    cafeStatusText.textContent = 'Non Aktif';
-                    localStorage.setItem('cafeStatus', 'nonaktif');
                     disablePaymentOptions();
                 }
             });
