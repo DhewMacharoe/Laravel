@@ -77,7 +77,7 @@
         <div class="row">
             <div class="col-12 mb-4">
                 <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Pesanan Terbaru</h5>
                         <div>
                             <span id="cafeStatusText">Aktif</span>
@@ -245,12 +245,10 @@
                                 </tr>
                             </thead>
                             <tbody id="detailPesananBody">
-                                <!-- Data akan diisi melalui JavaScript -->
                             </tbody>
                         </table>
                     </div>
                     <div class="modal-footer" id="modalFooter">
-                        <!-- Tombol akan diisi secara dinamis berdasarkan status -->
                     </div>
                 </div>
             </div>
