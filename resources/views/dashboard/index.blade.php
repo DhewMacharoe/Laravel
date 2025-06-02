@@ -79,6 +79,11 @@
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white">
                         <h5 class="mb-0">Pesanan Terbaru</h5>
+                        <div class="form-group">
+                            <label for="paymentSwitch">Aktifkan Pembayaran</label>
+                            <input type="checkbox" id="paymentSwitch" data-toggle="toggle" data-on="Aktif"
+                                data-off="Tidak Aktif" {{ $isPaymentActive ? 'checked' : '' }}>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -106,7 +111,7 @@
                                                 @elseif ($pesanan->status === 'pembayaran')
                                                     <span class="badge bg-info text-white">Pembayaran</span>
                                                 @elseif ($pesanan->status === 'selesai')
-                                                    <span class="badge bg-success ">Selesai</span>
+                                                    <span class="badge bg-success">Selesai</span>
                                                 @else
                                                     <span class="badge bg-secondary">-</span>
                                                 @endif
@@ -137,7 +142,6 @@
                                                         </button>
                                                     </form>
                                                 @endif
-
                                             </td>
                                         </tr>
                                     @empty
@@ -231,7 +235,7 @@
                                 <tr>
                                     <th>Nama Menu</th>
                                     <th>Harga</th>
-                                    <th>Jumlah </th>
+                                    <th>Jumlah</th>
                                     <th>Subtotal</th>
                                     <th>Suhu</th>
                                     <th>Catatan</th>
@@ -352,7 +356,7 @@
                             'dibatalkan': 'Pesanan Anda telah dibatalkan.'
                         };
                         const message =
-                            `Halo ${data.pelanggan.nama},\n\nPesanan Anda di *DelBites*:\nTotal: Rp ${ new Intl.NumberFormat('id-ID').format(data.total_harga)}\nStatus: *${status.text}*\n\n${statusMessages[data.status] || `Status pesanan Anda: ${data.status}`}\n\nTerima kasih telah memesan.`;
+                            `Halo ${data.pelanggan.nama},\n\nPesanan Anda di *DelBites*:\nTotal: Rp ${new Intl.NumberFormat('id-ID').format(data.total_harga)}\nStatus: *${status.text}*\n\n${statusMessages[data.status] || `Status pesanan Anda: ${data.status}`}\n\nTerima kasih telah memesan.`;
 
                         modalFooter.innerHTML = `
                             <a href="https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}" 
@@ -369,33 +373,6 @@
                         alert('Terjadi kesalahan saat mengambil data pesanan.');
                     });
             });
-
-            window.updateStatus = function(pesananId, status) {
-                fetch(`/pesanan/status/${pesananId}/${status}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Network response was not ok');
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            const modal = bootstrap.Modal.getInstance(detailModal);
-                            modal.hide();
-                            window.location.reload();
-                        } else {
-                            alert('Gagal memperbarui status pesanan');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Terjadi kesalahan saat memperbarui status pesanan');
-                    });
-            }
         });
     </script>
 @endsection
