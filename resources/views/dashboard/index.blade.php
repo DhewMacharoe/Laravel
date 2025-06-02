@@ -259,7 +259,6 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
 
     <style>
         .switch {
@@ -307,44 +306,11 @@
             transform: translateX(20px);
         }
     </style>
-
-=======
->>>>>>> parent of 5a681dc (switch)
 @endsection
 
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-<<<<<<< HEAD
-            const toggleCafeStatus = document.getElementById('toggleCafeStatus');
-            const cafeStatusText = document.getElementById('cafeStatusText');
-
-            // Check local storage for cafe status
-            if (localStorage.getItem('cafeStatus') === 'nonaktif') {
-                toggleCafeStatus.checked = false;
-                cafeStatusText.textContent = 'Non Aktif';
-                disablePaymentOptions();
-            }
-
-            toggleCafeStatus.addEventListener('change', function() {
-                const status = this.checked ? 'aktif' : 'nonaktif';
-                cafeStatusText.textContent = status === 'aktif' ? 'Aktif' : 'Non Aktif';
-                localStorage.setItem('cafeStatus', status);
-
-                // Call API to save cafe status
-                fetch('/api/cafe/status', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        status: status
-                    })
-                }).then(response => {
-                    if (response.ok) {
-                        if (this.checked) {
-                            enablePaymentOptions();
-=======
             const detailModal = document.getElementById('detailModal');
 
             detailModal.addEventListener('show.bs.modal', function(event) {
@@ -478,7 +444,6 @@
                             const modal = bootstrap.Modal.getInstance(detailModal);
                             modal.hide();
                             window.location.reload();
->>>>>>> parent of 5a681dc (switch)
                         } else {
                             disablePaymentOptions();
                         }
