@@ -163,7 +163,7 @@
                                     aria-labelledby="dropdownUserDetails" style="width: 250px;">
                                     <img
                                         src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('storage/logo1.png') }}">
-                                    <strong>{{ auth()->user()->name }}</strong>
+
 
                                     <div class="d-flex justify-content-between mt-3">
                                         <a href="{{ route('profil.index') }}"
