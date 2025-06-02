@@ -1,67 +1,34 @@
 <?php
 
-namespace App\Models;
-
 namespace App\Http\Controllers;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use App\Models\Menu as ModelsMenu;
-use App\Models\Pemesanan as ModelsPemesanan;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Pemesanan;
+use App\Models\Menu;
 use App\Models\StokBahan;
+use App\Models\Pelanggan;
 
-class AdminController extends Authenticatable
+class AdminController extends Controller
 {
-    use  HasFactory, Notifiable;
-
-    protected $table = 'admin';
-    protected $primaryKey = 'id_admin';
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'nama',
-        'email',
-        'password',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'password' => 'hashed',
-    ];
-
-    // Relasi dengan Menu
-    public function menus()
+    public function dashboard()
     {
-        return $this->hasMany(ModelsMenu::class, 'id_admin', 'id_admin');
-    }
+        $totalPesanan = Pemesanan::count();
+        $totalPelanggan = Pelanggan::count();
+        $totalMenu = Menu::count();
+        $totalStok = StokBahan::count();
+        $pesananTerbaru = Pemesanan::latest()->take(5)->get();
+        $menuTerlaris = Menu::withCount('pemesanans')->orderByDesc('pemesanans_count')->first();
+        $isPaymentActive = true;
 
-    // Relasi dengan Pemesanan
-    public function pemesanans()
-    {
-        return $this->hasMany(ModelsPemesanan::class, 'admin_id', 'id_admin');
-    }
-
-    // Relasi dengan StokBahan
-    public function stokBahans()
-    {
-        return $this->hasMany(StokBahan::class, 'id_admin', 'id_admin');
+        return view('admin.dashboard', compact(
+            'totalPesanan',
+            'totalPelanggan',
+            'totalMenu',
+            'totalStok',
+            'pesananTerbaru',
+            'menuTerlaris',
+            'isPaymentActive'
+        ));
     }
 }
