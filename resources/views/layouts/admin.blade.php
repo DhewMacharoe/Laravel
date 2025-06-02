@@ -139,69 +139,69 @@
 
                         <span class="navbar-brand mb-0 h1">@yield('page-title', 'Dashboard')</span>
 
-                        <div class="d-flex align-items-center">
-                            <!-- Notification Bell -->
-                            <div class="me-3">
-                                <a class="nav-link position-relative" href="{{ route('notifikasi.index') }}">
-                                    <i class="fas fa-bell"></i>
-                                    <span id="notificationCount"
-                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                        style="display:none;">
-                                        0
-                                    </span>
-                                </a>
-                            </div>
+                            {{-- <div class="d-flex align-items-center">
+                                <!-- Notification Bell -->
+                                <div class="me-3">
+                                    <a class="nav-link position-relative" href="{{ route('notifikasi.index') }}">
+                                        <i class="fas fa-bell"></i>
+                                        <span id="notificationCount"
+                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                            style="display:none;">
+                                            0
+                                        </span>
+                                    </a>
+                                </div> --}}
 
-                            <!-- User Dropdown -->
-                            <div class="dropdown p-2">
-                                <a href="#" class="d-flex align-items-center text-decoration-none"
-                                    id="dropdownUserDetails" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('default.png') }}"
-                                        alt="User Image" class="rounded-circle me-2" width="40" height="40">
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end text-center shadow p-3"
-                                    aria-labelledby="dropdownUserDetails" style="width: 250px;">
-                                    <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('default.png') }}"
-                                        alt="User Image" class="rounded-circle mx-auto d-block mb-2" width="60"
-                                        height="60">
-                                    <strong>{{ auth()->user()->name }}</strong>
+                        <!-- User Dropdown -->
+                        <div class="dropdown p-2">
+                            <a href="#" class="d-flex align-items-center text-decoration-none"
+                                id="dropdownUserDetails" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('default.png') }}"
+                                    alt="User Image" class="rounded-circle me-2" width="40" height="40">
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end text-center shadow p-3"
+                                aria-labelledby="dropdownUserDetails" style="width: 250px;">
+                                <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('default.png') }}"
+                                    alt="User Image" class="rounded-circle mx-auto d-block mb-2" width="60"
+                                    height="60">
+                                <strong>{{ auth()->user()->name }}</strong>
 
-                                    <div class="d-flex justify-content-between mt-3">
-                                        <a href="{{ route('profil.index') }}"
-                                            class="btn btn-outline-primary btn-sm me-1 flex-fill">Profile</a>
-                                        <form method="POST" action="{{ route('logout') }}" class="ms-1 flex-fill">
-                                            @csrf
-                                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">Sign
-                                                out</button>
-                                        </form>
-                                    </div>
-                                </ul>
-                            </div>
+                                <div class="d-flex justify-content-between mt-3">
+                                    <a href="{{ route('profil.index') }}"
+                                        class="btn btn-outline-primary btn-sm me-1 flex-fill">Profile</a>
+                                    <form method="POST" action="{{ route('logout') }}" class="ms-1 flex-fill">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">Sign
+                                            out</button>
+                                    </form>
+                                </div>
+                            </ul>
                         </div>
                     </div>
-                </nav>
-
-                <!-- Flash Messages -->
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                <!-- Page Content -->
-                <main class="pb-5">
-                    @yield('content')
-                </main>
             </div>
+            </nav>
+
+            <!-- Flash Messages -->
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            <!-- Page Content -->
+            <main class="pb-5">
+                @yield('content')
+            </main>
         </div>
+    </div>
     </div>
 
     <!-- Bootstrap JS + Popper -->
