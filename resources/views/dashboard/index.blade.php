@@ -79,13 +79,7 @@
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Pesanan Terbaru</h5>
-                        <div>
-                            <span id="cafeStatusText">Aktif</span>
-                            <label class="switch" style="margin-left: 10px;">
-                                <input type="checkbox" id="toggleCafeStatus" checked>
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
+
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
