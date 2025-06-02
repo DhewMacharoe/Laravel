@@ -161,9 +161,11 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end text-center shadow p-3"
                                     aria-labelledby="dropdownUserDetails" style="width: 250px;">
-                                    <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('logo1.png') }}"
-                                        alt="User Image" class="rounded-circle mx-auto d-block mb-2" width="60"
-                                        height="60">
+                                    <img
+                                        src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('storage/logo1.png') }}">
+
+                                    alt="User Image" class="rounded-circle mx-auto d-block mb-2" width="60"
+                                    height="60">
                                     <strong>{{ auth()->user()->name }}</strong>
 
                                     <div class="d-flex justify-content-between mt-3">
