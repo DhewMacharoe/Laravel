@@ -4,18 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title', 'DelBites Admin')</title>
+
+    {{-- CSRF Token untuk AJAX requests --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Font Awesome -->
+    {{-- Menggunakan versi 6.0.0 dari Font Awesome --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <!-- Custom CSS -->
+    <!-- Custom CSS untuk layout admin -->
     <style>
         body {
             font-family: 'Nunito', sans-serif;
+            /* Asumsi font Nunito tersedia */
             background-color: #f8f9fa;
         }
 
@@ -23,6 +29,8 @@
             background-color: #343a40;
             min-height: 100vh;
             color: white;
+            padding-top: 1rem;
+            /* Tambahkan padding atas */
         }
 
         .sidebar .nav-link {
@@ -49,8 +57,11 @@
         .content-wrapper {
             min-height: 100vh;
             background-color: #f8f9fa;
+            padding-top: 1rem;
+            /* Tambahkan padding atas */
         }
 
+        /* Responsive adjustments for sidebar */
         @media (max-width: 767.98px) {
             .sidebar {
                 position: fixed;
@@ -59,12 +70,32 @@
                 left: 0;
                 z-index: 100;
                 padding: 0;
-                width: 100%;
+                width: 250px;
+                /* Lebar sidebar saat mobile */
                 overflow-y: auto;
+                transform: translateX(-100%);
+                /* Sembunyikan sidebar secara default */
+                transition: transform 0.3s ease-in-out;
+            }
+
+            .sidebar.show {
+                transform: translateX(0%);
+                /* Tampilkan sidebar saat aktif */
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+                /* Pastikan tidak ada margin kiri di mobile */
+            }
+
+            .navbar-toggler {
+                display: block;
+                /* Tampilkan toggler di mobile */
             }
         }
     </style>
 
+    {{-- Custom styles from child views --}}
     @yield('styles')
 </head>
 
@@ -72,11 +103,11 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse" id="sidebarMenu">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
                 <div class="position-sticky pt-3">
                     <div class="d-flex align-items-center justify-content-center mb-4 p-3">
-                        <i class="fas fa-home me-2"></i>
-                        <span class="fs-4">Del<strong>Bites</strong></span>
+                        <i class="fas fa-utensils me-2 fs-4 text-white"></i> {{-- Mengubah ikon dan menambahkan warna --}}
+                        <span class="fs-4 text-white">Del<strong>Bites</strong></span>
                     </div>
 
                     <ul class="nav flex-column">
@@ -118,19 +149,20 @@
                         </li>
                     </ul>
 
-                    <hr>
+                    <hr class="text-white-50">
 
-                    <div class="text-center p-3 text-small">
+                    <div class="text-center p-3 text-white-50">
                         &copy; DelBites 2025
                     </div>
                 </div>
-            </div>
+            </nav>
 
             <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 content-wrapper ms-sm-auto px-md-4">
+            <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4 content-wrapper">
                 <!-- Top Navbar -->
                 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom mb-4">
                     <div class="container-fluid">
+                        {{-- Toggle button for mobile sidebar --}}
                         <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse"
                             data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
                             aria-label="Toggle navigation">
@@ -139,41 +171,36 @@
 
                         <span class="navbar-brand mb-0 h1">@yield('page-title', 'Dashboard')</span>
 
-                        <div class="d-flex align-items-center">
-                            <!-- Notification Bell -->
-                            <div class="me-3">
-                                {{-- <a class="nav-link position-relative" href="{{ route('notifikasi.index') }}">
-                                    <i class="fas fa-bell"></i>
-                                    <span id="notificationCount"
-                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                        style="display:none;">
-                                        0
-                                    </span>
-                                </a> --}}
-                            </div>
-
+                        <div class="d-flex align-items-center ms-auto"> {{-- ms-auto untuk push ke kanan --}}
                             <!-- User Dropdown -->
                             <div class="dropdown p-2">
                                 <a href="#" class="d-flex align-items-center text-decoration-none"
                                     id="dropdownUserDetails" data-bs-toggle="dropdown" aria-expanded="false">
                                     <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('default.png') }}"
                                         alt="User Image" class="rounded-circle me-2" width="40" height="40">
+                                    <span class="d-none d-lg-inline text-dark">{{ auth()->user()->name }}</span>
+                                    {{-- Tampilkan nama user --}}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end text-center shadow p-3"
                                     aria-labelledby="dropdownUserDetails" style="width: 250px;">
-                                    <img
-                                        src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('storage/logo1.png') }}">
-
-
-                                    <div class="d-flex justify-content-between mt-3">
-                                        <a href="{{ route('profil.index') }}"
-                                            class="btn btn-outline-primary btn-sm me-1 flex-fill">Profile</a>
-                                        <form method="POST" action="{{ route('logout') }}" class="ms-1 flex-fill">
+                                    <li>
+                                        <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('storage/logo1.png') }}"
+                                            alt="User Profile Image" class="rounded-circle mb-2" width="80"
+                                            height="80">
+                                    </li>
+                                    <li>
+                                        <h6 class="dropdown-header">{{ auth()->user()->name }}</h6>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="{{ route('profil.index') }}">Profile</a></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}">
                                             @csrf
-                                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">Sign
-                                                out</button>
+                                            <button type="submit" class="dropdown-item text-danger">Sign out</button>
                                         </form>
-                                    </div>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -199,16 +226,17 @@
                 <main class="pb-5">
                     @yield('content')
                 </main>
-            </div>
+            </main>
         </div>
     </div>
 
     <!-- Bootstrap JS + Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- jQuery -->
+    <!-- jQuery (jika masih diperlukan oleh skrip lain, jika tidak bisa dihapus) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    {{-- Custom scripts from child views --}}
     @yield('scripts')
 </body>
 
