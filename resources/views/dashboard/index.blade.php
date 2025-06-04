@@ -73,13 +73,33 @@
             </div>
         </div>
 
+        <!-- Kontrol Status Aplikasi -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Kontrol Status Aplikasi Mobile</h5>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="appStatusToggle">
+                            <label class="form-check-label" for="appStatusToggle" id="appStatusLabel">Aplikasi Sedang
+                                Tutup</label>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Gunakan tombol ini untuk membuka atau menutup akses aplikasi mobile untuk
+                            pelanggan.</p>
+                        <div id="appStatusMessage" class="alert mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Pesanan Terbaru -->
         <div class="row">
             <div class="col-12 mb-4">
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Pesanan Terbaru</h5>
-
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -301,6 +321,124 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const detailModal = document.getElementById('detailModal');
+            const appStatusToggle = document.getElementById('appStatusToggle');
+            const appStatusLabel = document.getElementById('appStatusLabel');
+            const appStatusMessageDiv = document.getElementById('appStatusMessage');
+
+            // Function to fetch current app status
+            function fetchAppStatus() {
+                fetch('{{ route('admin.app.status.get') }}') // New route to get status
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.status === 'closed') {
+                            appStatusToggle.checked = true;
+                            appStatusLabel.textContent = 'Aplikasi Sedang Tutup';
+                            appStatusMessageDiv.style.display = 'block';
+                            appStatusMessageDiv.className = 'alert alert-warning mt-3';
+                            appStatusMessageDiv.textContent =
+                                'Status aplikasi saat ini: TUTUP. Pelanggan tidak dapat mengakses aplikasi.';
+                        } else {
+                            appStatusToggle.checked = false;
+                            appStatusLabel.textContent = 'Aplikasi Sedang Buka';
+                            appStatusMessageDiv.style.display = 'block';
+                            appStatusMessageDiv.className = 'alert alert-success mt-3';
+                            appStatusMessageDiv.textContent =
+                                'Status aplikasi saat ini: BUKA. Pelanggan dapat mengakses aplikasi.';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching app status:', error);
+                        appStatusMessageDiv.style.display = 'block';
+                        appStatusMessageDiv.className = 'alert alert-danger mt-3';
+                        appStatusMessageDiv.textContent = 'Gagal memuat status aplikasi. Coba refresh halaman.';
+                    });
+            }
+
+            // Fetch status on page load
+            fetchAppStatus();
+
+            // Event listener for the toggle switch
+            appStatusToggle.addEventListener('change', function() {
+                const newStatus = this.checked ? 'closed' : 'open';
+                let confirmationMessage = '';
+                let defaultCloseMessage = 'Aplikasi sedang dalam pemeliharaan.';
+
+                if (newStatus === 'closed') {
+                    confirmationMessage =
+                        'Apakah Anda yakin ingin MENUTUP aplikasi? Pelanggan tidak akan bisa mengaksesnya.';
+                    // Prompt for a custom close message if closing
+                    const customMessage = prompt(
+                        'Masukkan pesan untuk pelanggan (opsional, default: "Aplikasi sedang dalam pemeliharaan."):'
+                    );
+                    if (customMessage !== null) { // If user didn't cancel the prompt
+                        defaultCloseMessage = customMessage.trim() === '' ? defaultCloseMessage :
+                            customMessage.trim();
+                    } else {
+                        // If user cancels the prompt, revert the toggle state and do nothing
+                        this.checked = !this.checked;
+                        return;
+                    }
+                } else {
+                    confirmationMessage =
+                        'Apakah Anda yakin ingin MEMBUKA aplikasi? Pelanggan akan bisa mengaksesnya kembali.';
+                }
+
+                if (confirm(confirmationMessage)) {
+                    // Send AJAX request to toggle status
+                    fetch('{{ route('admin.app.status.toggle') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .content
+                            },
+                            body: JSON.stringify({
+                                status: newStatus,
+                                message: defaultCloseMessage // Send the message when toggling
+                            })
+                        })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Network response was not ok');
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                appStatusLabel.textContent = newStatus === 'closed' ?
+                                    'Aplikasi Sedang Tutup' : 'Aplikasi Sedang Buka';
+                                appStatusMessageDiv.style.display = 'block';
+                                appStatusMessageDiv.className =
+                                    `alert alert-${newStatus === 'closed' ? 'warning' : 'success'} mt-3`;
+                                appStatusMessageDiv.textContent = data.message;
+                            } else {
+                                // Revert the toggle state on error
+                                this.checked = !this.checked;
+                                appStatusMessageDiv.style.display = 'block';
+                                appStatusMessageDiv.className = 'alert alert-danger mt-3';
+                                appStatusMessageDiv.textContent = data.message ||
+                                    'Gagal mengubah status aplikasi.';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error toggling app status:', error);
+                            // Revert the toggle state on network/fetch error
+                            this.checked = !this.checked;
+                            appStatusMessageDiv.style.display = 'block';
+                            appStatusMessageDiv.className = 'alert alert-danger mt-3';
+                            appStatusMessageDiv.textContent =
+                                'Terjadi kesalahan jaringan saat mengubah status.';
+                        });
+                } else {
+                    // If user cancels, revert the toggle state
+                    this.checked = !this.checked;
+                }
+            });
+
+
+            // Existing modal detail logic
+            const detailModal = document.getElementById('detailModal');
 
             detailModal.addEventListener('show.bs.modal', function(event) {
                 const button = event.relatedTarget;
@@ -434,7 +572,10 @@
                             modal.hide();
                             window.location.reload();
                         } else {
-                            disablePaymentOptions();
+                            // Assuming disablePaymentOptions() is a function defined elsewhere or needs to be removed
+                            // If it's not defined, it will cause an error.
+                            // For now, let's just log it.
+                            console.warn('disablePaymentOptions() not defined or not applicable here.');
                         }
                     })
                     .catch(error => {

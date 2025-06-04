@@ -106,20 +106,20 @@ class MenuController extends Controller
     //         'id_pelanggan' => 'required|exists:pelanggan,id',
     //         'rating' => 'required|integer|min:1|max:5',
     //     ]);
-    
+
     //     // Simpan atau update rating
     //     Rating::updateOrCreate(
     //         ['id_menu' => $request->id_menu, 'id_pelanggan' => $request->id_pelanggan],
     //         ['rating' => $request->rating]
     //     );
-    
+
     //     // Hitung ulang rata-rata
     //     $average = Rating::where('id_menu', $request->id_menu)->avg('rating');
-    
+
     //     $menu = Menu::find($request->id_menu);
     //     $menu->rating = $average;
     //     $menu->save();
-    
+
     //     return response()->json(['message' => 'Rating berhasil disimpan', 'average' => $average]);
     // }
 
@@ -145,15 +145,14 @@ class MenuController extends Controller
         $request->validate([
             'rating' => 'required|numeric|min:1|max:5'
         ]);
-    
+
         $detail = DetailPemesanan::findOrFail($id);
         $detail->rating = $request->rating;
         $detail->save();
-    
+
         // Update akumulasi rating menu
         $this->updateMenuRating($detail->id_menu);
-    
+
         return response()->json(['message' => 'Rating berhasil disimpan']);
     }
-    
 }
