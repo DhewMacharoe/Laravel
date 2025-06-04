@@ -416,7 +416,7 @@
                         throw new Error(errorData.message || 'Gagal memperbarui status.');
                     }
 
-                    const data = await response.json(); // Lanjutkan dengan mengambil data respons
+                    const data = await response.json();
                     if (data.success) {
                         showAlert(data.message, 'success');
                         loadAppStatus(); // Muat ulang status setelah berhasil disimpan
@@ -565,7 +565,7 @@
                             window.location.reload();
                         } else {
                             // Jika ada fungsi disablePaymentOptions, panggil di sini
-                            // disablePaymentOptions(); 
+                            // disablePaymentOptions();
                         }
                     })
                     .catch(error => {
