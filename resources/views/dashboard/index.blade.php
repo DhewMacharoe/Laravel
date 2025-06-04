@@ -73,40 +73,13 @@
             </div>
         </div>
 
-        <!-- Kontrol Status Aplikasi -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Kontrol Status Aplikasi</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="me-3">Status Aplikasi Saat Ini: <strong
-                                    id="currentAppStatus">Memuat...</strong></span>
-                            <label class="switch me-3">
-                                <input type="checkbox" id="appStatusToggle">
-                                <span class="slider round"></span>
-                            </label>
-                            <button class="btn btn-sm btn-primary" id="saveAppStatusBtn">Simpan Status</button>
-                        </div>
-                        <div class="mt-3" id="closeMessageContainer" style="display: none;">
-                            <label for="closeMessage" class="form-label">Pesan Saat Aplikasi Tutup:</label>
-                            <textarea class="form-control" id="closeMessage" rows="2"
-                                placeholder="Contoh: Aplikasi sedang dalam pemeliharaan."></textarea>
-                        </div>
-                        <div class="mt-3 alert d-none" role="alert" id="appStatusAlert"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Pesanan Terbaru -->
         <div class="row">
             <div class="col-12 mb-4">
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Pesanan Terbaru</h5>
+
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -327,109 +300,6 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Kontrol Status Aplikasi ---
-            const appStatusToggle = document.getElementById('appStatusToggle');
-            const currentAppStatusSpan = document.getElementById('currentAppStatus');
-            const closeMessageContainer = document.getElementById('closeMessageContainer');
-            const closeMessageInput = document.getElementById('closeMessage');
-            const saveAppStatusBtn = document.getElementById('saveAppStatusBtn');
-            const appStatusAlert = document.getElementById('appStatusAlert');
-
-            // Fungsi untuk menampilkan alert
-            function showAlert(message, type = 'info') {
-                appStatusAlert.textContent = message;
-                appStatusAlert.className = `mt-3 alert alert-${type}`;
-                appStatusAlert.classList.remove('d-none');
-            }
-
-            // Fungsi untuk menyembunyikan alert
-            function hideAlert() {
-                appStatusAlert.classList.add('d-none');
-            }
-
-            // Fungsi untuk memuat status aplikasi saat ini
-            async function loadAppStatus() {
-                try {
-                    const response = await fetch('{{ route('admin.app_status.current') }}');
-                    if (!response.ok) throw new Error('Gagal memuat status aplikasi.');
-                    const data = await response.json();
-
-                    currentAppStatusSpan.textContent = data.status === 'open' ? 'Buka' : 'Tutup';
-                    appStatusToggle.checked = data.status === 'open';
-                    closeMessageInput.value = data.message || ''; // Set pesan jika ada
-
-                    if (data.status === 'closed') {
-                        closeMessageContainer.style.display = 'block';
-                    } else {
-                        closeMessageContainer.style.display = 'none';
-                    }
-                } catch (error) {
-                    console.error('Error loading app status:', error);
-                    showAlert('Gagal memuat status aplikasi.', 'danger');
-                    currentAppStatusSpan.textContent = 'Error';
-                }
-            }
-
-            // Muat status aplikasi saat halaman dimuat
-            loadAppStatus();
-
-            // Event listener untuk toggle
-            appStatusToggle.addEventListener('change', function() {
-                if (this.checked) {
-                    currentAppStatusSpan.textContent = 'Buka';
-                    closeMessageContainer.style.display = 'none';
-                    closeMessageInput.value = ''; // Kosongkan pesan saat dibuka
-                } else {
-                    currentAppStatusSpan.textContent = 'Tutup';
-                    closeMessageContainer.style.display = 'block';
-                }
-                hideAlert(); // Sembunyikan alert saat toggle diubah
-            });
-
-            // Event listener untuk tombol Simpan Status
-            saveAppStatusBtn.addEventListener('click', async function() {
-                const status = appStatusToggle.checked ? 'open' : 'closed';
-                const message = closeMessageInput.value.trim();
-
-                if (status === 'closed' && message === '') {
-                    showAlert('Pesan saat aplikasi tutup tidak boleh kosong.', 'warning');
-                    return;
-                }
-
-                showAlert('Menyimpan status...', 'info');
-                try {
-                    const response = await fetch('{{ route('admin.app_status.toggle') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .content
-                        },
-                        body: JSON.stringify({
-                            status: status,
-                            message: message
-                        })
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || 'Gagal memperbarui status.');
-                    }
-
-                    const data = await response.json();
-                    if (data.success) {
-                        showAlert(data.message, 'success');
-                        loadAppStatus(); // Muat ulang status setelah berhasil disimpan
-                    } else {
-                        showAlert(data.message || 'Gagal memperbarui status.', 'danger');
-                    }
-                } catch (error) {
-                    console.error('Error saving app status:', error);
-                    showAlert('Terjadi kesalahan saat menyimpan status: ' + error.message, 'danger');
-                }
-            });
-
-            // --- Modal Detail Pesanan ---
             const detailModal = document.getElementById('detailModal');
 
             detailModal.addEventListener('show.bs.modal', function(event) {
@@ -564,8 +434,7 @@
                             modal.hide();
                             window.location.reload();
                         } else {
-                            // Jika ada fungsi disablePaymentOptions, panggil di sini
-                            // disablePaymentOptions();
+                            disablePaymentOptions();
                         }
                     })
                     .catch(error => {
