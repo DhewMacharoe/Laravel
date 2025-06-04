@@ -10,10 +10,7 @@ use App\Http\Controllers\PelangganWebController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\ProfilController;
-use App\Http\Controllers\NotifikasiController;
-use App\Events\NotifikasiEvent;
-use App\Models\Notifikasi;
-use App\Http\Controllers\CafeController;
+use App\Http\Controllers\AppStatusController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,27 +62,6 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::get('/pelanggan/by-telepon', [PelangganController::class, 'getByTelepon']);
 
-    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
-
-    Route::post('/kirim-notifikasi', function (\Illuminate\Http\Request $request) {
-        $request->validate([
-            'judul' => 'required|string',
-            'pesan' => 'required|string',
-        ]);
-
-        $notifikasi = Notifikasi::create([
-            'judul' => $request->judul,
-            'pesan' => $request->pesan,
-        ]);
-
-        broadcast(new NotifikasiEvent($notifikasi))->toOthers();
-
-        return response()->json(['success' => true]);
-    });
-    Route::get('/test-notifikasi', function () {
-        broadcast(new NotifikasiEvent('Pesanan baru telah masuk!'))->toOthers();
-        return 'Notifikasi terkirim';
-    });
-    
-Route::post('/api/cafe/status', [CafeController::class, 'updateStatus']);
+    Route::post('/admin/app-status/toggle', [AppStatusController::class, 'toggleStatus'])->name('admin.app.status.toggle');
+    Route::get('/admin/app-status/get', [AppStatusController::class, 'getStatus'])->name('admin.app.status.get');
 });
