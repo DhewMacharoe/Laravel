@@ -10,7 +10,7 @@ use App\Http\Controllers\PelangganWebController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\ProfilController;
-use App\Http\Controllers\AppStatusController;
+use App\Http\Controllers\AppStatusAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +62,6 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::get('/pelanggan/by-telepon', [PelangganController::class, 'getByTelepon']);
 
-    Route::post('/admin/app-status/toggle', [AppStatusController::class, 'toggleStatus'])->name('admin.app.status.toggle');
-    Route::get('/admin/app-status/get', [AppStatusController::class, 'getStatus'])->name('admin.app.status.get');
+    Route::post('/admin/app-status/toggle', [AppStatusAdminController::class, 'toggleStatus'])->name('admin.app_status.toggle');
+    Route::get('/admin/app-status/current', [AppStatusAdminController::class, 'getCurrentStatus'])->name('admin.app_status.current');
 });
